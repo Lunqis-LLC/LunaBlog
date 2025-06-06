@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>LunaBlog 博客主页</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', 'Microsoft YaHei', Arial, sans-serif;
+            background: #f6f8fa;
+            color: #222;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        /* 左侧导航栏固定并内容上下居中 */
+        .sidebar {
+            width: 220px;
+            background: #232946;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center; /* 上下居中 */
+            padding: 0;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.03);
+            z-index: 10;
+        }
+        .sidebar h1 {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin: 0 0 32px 32px;
+            letter-spacing: 2px;
+        }
+        .nav-links {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding-left: 32px;
+        }
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: #eebbc3;
+        }
+        /* 中间博客列表，留出两侧固定栏的空间 */
+        .main-content {
+            flex: 1;
+            padding: 40px 32px 40px 32px;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            margin-left: 220px; /* 左侧栏宽度 */
+            margin-right: 300px; /* 右侧栏宽度 */
+        }
+        .blog-list {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+        .blog-card {
+            display: flex;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(35,41,70,0.06);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+        .blog-card:hover {
+            box-shadow: 0 4px 16px rgba(35,41,70,0.12);
+        }
+        .blog-thumb {
+            width: 160px;
+            height: 120px;
+            object-fit: cover;
+            background: #eee;
+        }
+        .blog-info {
+            flex: 1;
+            padding: 18px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .blog-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+            color: #232946;
+        }
+        .blog-summary {
+            color: #555;
+            font-size: 1em;
+            margin-bottom: 12px;
+        }
+        .blog-meta {
+            font-size: 0.95em;
+            color: #888;
+        }
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 32px 0 0 0;
+        }
+        .pagination button {
+            background: #232946;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 14px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .pagination button.active,
+        .pagination button:hover {
+            background: #eebbc3;
+            color: #232946;
+        }
+        /* 右侧推荐栏固定 */
+        .sidebar-right {
+            width: 300px;
+            background: #fff;
+            border-left: 1px solid #eaeaea;
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+        .recommend-section {
+            margin-bottom: 24px;
+        }
+        .recommend-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #232946;
+            margin-bottom: 12px;
+        }
+        .recommend-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .recommend-list li {
+            margin-bottom: 8px;
+        }
+        .recommend-list a {
+            color: #232946;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .recommend-list a:hover {
+            color: #eebbc3;
+        }
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag {
+            background: #eebbc3;
+            color: #232946;
+            border-radius: 12px;
+            padding: 4px 12px;
+            font-size: 0.95em;
+            margin-bottom: 4px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .tag:hover {
+            background: #232946;
+            color: #fff;
+        }
+        .custom-info {
+            font-size: 0.98em;
+            color: #555;
+            background: #f6f8fa;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        @media (max-width: 1100px) {
+            .sidebar-right { display: none; }
+            .main-content { margin-right: 0; }
+        }
+        @media (max-width: 800px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 24px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧导航栏 -->
+        <nav class="sidebar">
+            <div style="width:100%;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;">
+                <h1>LunaBlog</h1>
+                <div class="nav-links">
+                    <a href="#">首页</a>
+                    <a href="#">关于我们</a>
+                    <a href="#">联系</a>
+                    <a href="#">归档</a>
+                    <a href="#">标签</a>
+                </div>
+            </div>
+        </nav>
+        <!-- 中间博客列表 -->
+        <main class="main-content">
+            <div class="blog-list">
+                <!-- 示例博客文章卡片，实际可用后端渲染或JS生成 -->
+                <div class="blog-card">
+                    <img class="blog-thumb" src="https://picsum.photos/160/120?random=1" alt="缩略图">
+                    <div class="blog-info">
+                        <div>
+                            <div class="blog-title">如何打造高效的个人博客</div>
+                            <div class="blog-summary">本文介绍了搭建个人博客的流程、常用技术选型以及内容规划建议，助你快速拥有属于自己的博客空间。</div>
+                        </div>
+                        <div class="blog-meta">作者：Luna &nbsp;|&nbsp; 2024-06-01</div>
+                    </div>
+                </div>
+                <div class="blog-card">
+                    <img class="blog-thumb" src="https://picsum.photos/160/120?random=2" alt="缩略图">
+                    <div class="blog-info">
+                        <div>
+                            <div class="blog-title">前端三剑客：HTML、CSS、JavaScript</div>
+                            <div class="blog-summary">深入浅出讲解前端三大基础技术，适合初学者快速入门并掌握网页开发的核心技能。</div>
+                        </div>
+                        <div class="blog-meta">作者：Luna &nbsp;|&nbsp; 2024-05-28</div>
+                    </div>
+                </div>
+                <div class="blog-card">
+                    <img class="blog-thumb" src="https://picsum.photos/160/120?random=3" alt="缩略图">
+                    <div class="blog-info">
+                        <div>
+                            <div class="blog-title">Markdown 写作进阶技巧</div>
+                            <div class="blog-summary">掌握 Markdown 的高级用法，让你的技术文档和博客排版更美观、更高效。</div>
+                        </div>
+                        <div class="blog-meta">作者：Luna &nbsp;|&nbsp; 2024-05-20</div>
+                    </div>
+                </div>
+                <div class="blog-card">
+                    <img class="blog-thumb" src="https://picsum.photos/160/120?random=4" alt="缩略图">
+                    <div class="blog-info">
+                        <div>
+                            <div class="blog-title">Git 与 GitHub 入门指南</div>
+                            <div class="blog-summary">从零开始学习 Git 版本控制和 GitHub 协作开发，助你成为团队开发高手。</div>
+                        </div>
+                        <div class="blog-meta">作者：Luna &nbsp;|&nbsp; 2024-05-15</div>
+                    </div>
+                </div>
+                <div class="blog-card">
+                    <img class="blog-thumb" src="https://picsum.photos/160/120?random=5" alt="缩略图">
+                    <div class="blog-info">
+                        <div>
+                            <div class="blog-title">用 Vue3 构建现代化前端应用</div>
+                            <div class="blog-summary">介绍 Vue3 的核心特性和最佳实践，带你快速上手现代前端开发。</div>
+                        </div>
+                        <div class="blog-meta">作者：Luna &nbsp;|&nbsp; 2024-05-10</div>
+                    </div>
+                </div>
+            </div>
+            <!-- 分页控件 -->
+            <div class="pagination">
+                <button class="active">1</button>
+                <button>2</button>
+                <button>3</button>
+                <button>下一页</button>
+            </div>
+        </main>
+        <!-- 右侧推荐栏 -->
+        <aside class="sidebar-right">
+            <!-- 推荐文章 -->
+            <section class="recommend-section">
+                <div class="recommend-title">推荐文章</div>
+                <ul class="recommend-list">
+                    <li><a href="#">如何打造高效的个人博客</a></li>
+                    <li><a href="#">Markdown 写作进阶技巧</a></li>
+                    <li><a href="#">用 Vue3 构建现代化前端应用</a></li>
+                </ul>
+            </section>
+            <!-- 标签 -->
+            <section class="recommend-section">
+                <div class="recommend-title">标签</div>
+                <div class="tags">
+                    <a class="tag" href="#">前端</a>
+                    <a class="tag" href="#">后端</a>
+                    <a class="tag" href="#">Vue</a>
+                    <a class="tag" href="#">Git</a>
+                    <a class="tag" href="#">Markdown</a>
+                    <a class="tag" href="#">技术分享</a>
+                </div>
+            </section>
+            <!-- 自定义信息 -->
+            <section class="recommend-section">
+                <div class="recommend-title">博客技术栈</div>
+                <div class="custom-info">
+                    本博客基于 ASP.NET Core + Vue3 + MySQL 构建，前端采用现代响应式设计，支持移动端浏览体验。
+                </div>
+            </section>
+        </aside>
+    </div>
+</body>
+</html>
